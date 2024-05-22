@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <conio.h>
+#include <fstream> 
 
 /*
 [IDEIA]
@@ -132,9 +133,9 @@ void mergeSort(int *vetor, int posicaoInicio, int posicaoFim) {
 
 int main()
 {
-	DIR *dp;
+	DIR *dp, *ds;
 	struct dirent *ep;
-	dp = opendir("./teste");
+	dp = opendir("./txtTeste");
 	
 	int minhaArray[99999];
 	int tamanho = 0;
@@ -149,7 +150,7 @@ int main()
 			  	char *result;
 			  	int i = 0;
 			  	
-			  	std::string caminho = "./teste/" + nomeArquivo;
+			  	std::string caminho = "./txtTeste/" + nomeArquivo;
 			
 			  	const char *cstr = caminho.c_str();
 			  	
@@ -162,12 +163,75 @@ int main()
 			  	{
 			      	result = fgets(Linha, 100, arq);
 			      	if (result) {
-						minhaArray[i] = (int)Linha;
+			      		//std::cout << Linha << "\n";
+						minhaArray[i] = atoi(Linha);
 						i++;
 						tamanho = i;
 					}
 			  	}
 			  	fclose(arq);
+			  	
+			  	//Variáveis de Tempo
+			    clock_t tempoI, tempoF;
+				float tempoA, tempoB, tempoC;
+				
+				//Inicio do TempoA
+				tempoI = clock();
+				
+				//método A - Selection Sort
+				selection_sort(minhaArray, tamanho);
+				
+				//Fim do TempoA
+				tempoF = clock();
+				
+				//Cálculo de TempoA
+				tempoA = delta_tempo(tempoF, tempoI);
+				
+				//Inicio do TempoB
+				tempoI = clock();
+				
+				//método B - Quick Sort
+				quick_sort(minhaArray, 10, 20);
+				
+				//Fim do TempoB
+				tempoF = clock();
+				
+				//Cálculo de TempoB
+				tempoB = delta_tempo(tempoF, tempoI);
+				
+				//Inicio do TempoC
+				tempoI = clock();
+				
+				//método C - Mergesort
+				mergeSort(minhaArray, 0, tamanho - 1);
+			
+				//Fim do TempoC
+				tempoF = clock();
+				
+				//Cálculo de TempoC
+				tempoC = delta_tempo(tempoF, tempoI);
+			
+				//FINALIZAÇÃO
+				std::cout << nomeArquivo << "\n";
+				printf("%0.10f \n", tempoA);
+				printf("%0.10f \n", tempoB);
+				printf("%0.10f \n\n", tempoC);
+				
+				ds = opendir("./saida");
+				if (ds == NULL) {
+					mkdir("./saida");
+					ds = opendir("./saida");
+				}
+				
+				std::string caminha = "./saida/" + nomeArquivo;
+				std::ofstream outfile (caminha.c_str());
+
+				outfile << nomeArquivo << std::endl;
+				outfile << tempoA << std::endl;
+				outfile << tempoB << std::endl;
+				outfile << tempoC << std::endl;
+
+				outfile.close();
 			}
 		}
 		(void) closedir(dp);
@@ -175,91 +239,4 @@ int main()
 	else {
 		printf("Não foi possível abrir a pasta");
 	}
-	
-	//Ajuste para exibição de textos - PT BR
-    //setlocale(LC_ALL, "");
-    
-    //"abrir o arquivo"
-    
-    //VETOR BASE ESTÁTICO
-    int vetBase[20] = {4, 9, 47, 15, 33, 18, 48, 7, 41, 25, 37, 2, 22, 50, 14, 46, 16, 36, 26, 40};
-    
-	//Variáveis de Tempo
-    clock_t tempoI, tempoF;
-	float tempoA, tempoB, tempoC;
-    
-//ORGANIZAÇÃO PELO MÉTODO A - Selection Sort
-    //Duplicando pra A - precisa de ajuste
-    int vetA[20];
-	for(int i = 0; i < 20; i++)
-    {
-    	vetA[i] = vetBase[i];
-	}
-	
-	//Inicio do TempoA
-	tempoI = clock();
-	
-	//método A - Selection Sort
-	selection_sort(minhaArray, tamanho);
-	
-	//Fim do TempoA
-	tempoF = clock();
-	
-	//Cálculo de TempoA
-	tempoA = delta_tempo(tempoF, tempoI);
-
-//ORGANIZAÇÃO PELO MÉTODO B - 
-    //Duplicando pra B - precisa de ajuste
-	int vetB[20];
-	for(int i = 0; i < 20; i++)
-    {
-    	vetB[i] = vetBase[i];
-	}
-	
-	//Inicio do TempoB
-	tempoI = clock();
-	
-	//método B - Quick Sort
-	quick_sort(minhaArray, 10, 20);
-	
-	//Fim do TempoB
-	tempoF = clock();
-	
-	//Cálculo de TempoB
-	tempoB = delta_tempo(tempoF, tempoI);
-
-//ORGANIZAÇÃO PELO MÉTODO C - 
-    //Duplicando pra C - precisa de ajuste
-	int vetC[20];
-	for(int i = 0; i < 20; i++)
-    {
-    	vetC[i] = vetBase[i];
-	}
-	
-	//Inicio do TempoC
-	tempoI = clock();
-	
-	//método C - Mergesort
-	mergeSort(minhaArray, 0, tamanho - 1);
-
-	//Fim do TempoC
-	tempoF = clock();
-	
-	//Cálculo de TempoC
-	tempoC = delta_tempo(tempoF, tempoI);
-
-//FINALIZAÇÃO
-	printf("%0.4f \n", tempoC);
-	
-	//exibir
-	for(int i; i < 20; i++)
-	{
-		printf("%d - ", vetC[i]);
-	}
-
-/*
-	printf("%0.4f \n", tempoB);
-	printf("%0.4f \n", tempoC);
-*/
 }
-
