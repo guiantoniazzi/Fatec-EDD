@@ -9,6 +9,7 @@
 #include <conio.h>
 #include <fstream>
 #include <fileapi.h>
+#include <bits/stdc++.h>
 
 /*
 [IDEIA]
@@ -38,9 +39,9 @@ const std::string computador = "Leticia";
 
 struct linha{
         std::string nomeArquivo;
-        float tempoSelection;
-        float tempoQuick;
-        float tempoMerge;
+        double tempoSelection;
+        double tempoQuick;
+        double tempoMerge;
         std::string tamanho;
         std::string duplicidade;
         std::string org_previa;
@@ -48,9 +49,9 @@ struct linha{
 };
 
 //Funções
-float delta_tempo(clock_t Tempo_Final, clock_t Tempo_Inicial)
+double delta_tempo(clock_t Tempo_Final, clock_t Tempo_Inicial)
 {
-	float resultado;
+	double resultado;
 	resultado = ((Tempo_Final - Tempo_Inicial) / (CLOCKS_PER_SEC / 1000));
 	resultado = resultado/1000;
 	return resultado;
@@ -77,27 +78,74 @@ void selection_sort (int vetor[], int tamanho)
 }
 
 //Sort B
-void quick_sort(int vetor[], int esq, int dir){
-    int pivo = esq, i,ch,j;
-    for(i=esq+1;i<=dir;i++){
-        j = i;
-        if(vetor[j] < vetor[pivo]){
-            ch = vetor[j];
-            while(j > pivo){
-                vetor[j] = vetor[j-1];
-                j--;
-            }
-            vetor[j] = ch;
-            pivo++;
+//void quick_sort(int vetor[], int esq, int dir){
+//    int pivo = esq, i,ch,j;
+//    for(i=esq+1;i<=dir;i++){
+//        j = i;
+//        if(vetor[j] < vetor[pivo]){
+//            ch = vetor[j];
+//            while(j > pivo){
+//                vetor[j] = vetor[j-1];
+//                j--;
+//            }
+//            vetor[j] = ch;
+//            pivo++;
+//        }
+//    }
+//    if(pivo-1 >= esq){
+//        quick_sort(vetor,esq,pivo-1);
+//    }
+//    if(pivo+1 <= dir){
+//        quick_sort(vetor,pivo+1,dir);
+//    }
+// }
+
+
+//Conjunto de 3 funções para Sort B - pós ajuste
+void swap(int* a, int* b) {
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
+
+int partition(int arr[], int l, int h) {
+    int x = arr[h];
+    int i = (l - 1);
+    for (int j = l; j <= h - 1; j++) {
+        if (arr[j] <= x) {
+            i++;
+            swap(&arr[i], &arr[j]);
         }
     }
-    if(pivo-1 >= esq){
-        quick_sort(vetor,esq,pivo-1);
+    swap(&arr[i + 1], &arr[h]);
+    return (i + 1);
+}
+
+void quick_sort(int arr[], int l, int h) {
+    int stack[h - l + 1];
+    int top = -1;
+
+    stack[++top] = l;
+    stack[++top] = h;
+
+    while (top >= 0) {
+        h = stack[top--];
+        l = stack[top--];
+
+        int p = partition(arr, l, h);
+
+        if (p - 1 > l) {
+            stack[++top] = l;
+            stack[++top] = p - 1;
+        }
+
+        if (p + 1 < h) {
+            stack[++top] = p + 1;
+            stack[++top] = h;
+        }
     }
-    if(pivo+1 <= dir){
-        quick_sort(vetor,pivo+1,dir);
-    }
- }
+}
+
 
 //Sort C
 void mergeSort(int *vetor, int posicaoInicio, int posicaoFim) {
@@ -176,7 +224,7 @@ void executaMetodos(const char* caminhoArquivo, std::string nomeArquivo){
     char Linha[100000];
     char *result;
     int i = 0;
-    int minhaArray[99999];
+    int minhaArray[100002];
     int tamanho = 0;
 
     arq = fopen(caminhoArquivo, "rb");
@@ -194,11 +242,12 @@ void executaMetodos(const char* caminhoArquivo, std::string nomeArquivo){
             tamanho = i;
         }
     }
+    std::cout << "Tamanho: " << tamanho << "\n";
     fclose(arq);
 
     //Variáveis de Tempo
     clock_t tempoI, tempoF;
-    float tempoA, tempoB, tempoC;
+    double tempoA, tempoB, tempoC;
 
     //Inicio do TempoA
     tempoI = clock();
@@ -216,7 +265,7 @@ void executaMetodos(const char* caminhoArquivo, std::string nomeArquivo){
     tempoI = clock();
 
     //método B - Quick Sort
-    quick_sort(minhaArray, 10, 20);
+    quick_sort(minhaArray, 0, tamanho -1);
 
     //Fim do TempoB
     tempoF = clock();
