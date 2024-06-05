@@ -316,7 +316,7 @@ void leDir(const char* nomeDir){
                 leDir(caminho.c_str());
             }
        }
-       else if(atributos & FILE_ATTRIBUTE_ARCHIVE){
+       else if(FILE_ATTRIBUTE_ARCHIVE){
            executaMetodos(caminho.c_str(), fileName);
            std::cout << "Processando..." << fileName << "\n";
        }
